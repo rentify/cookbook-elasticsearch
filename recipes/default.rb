@@ -34,20 +34,11 @@ bash "remove the elasticsearch user home" do
   only_if { ::File.directory?("#{node.elasticsearch[:dir]}/elasticsearch") }
 end
 
-
-# Create ES directories
-#
-[ node.elasticsearch[:path][:conf], node.elasticsearch[:path][:logs] ].each do |path|
-  directory path do
-    owner node.elasticsearch[:user] and group node.elasticsearch[:user] and mode 0755
-    recursive true
-    action :create
-  end
-end
-
 directory node.elasticsearch[:pid_path] do
   mode '0755'
   recursive true
+  owner node.elasticsearch[:user]
+  group node.elasticsearch[:user]
 end
 
 # Create data path directories
@@ -103,6 +94,14 @@ ark "elasticsearch" do
 
     ::File.directory?(link) && ::File.symlink?(link) && ::File.readlink(link) == target && ::File.exists?(binary)
   end
+end
+
+# Create ES directories
+#
+directory node.elasticsearch[:path][:logs] do
+  owner node.elasticsearch[:user] and group node.elasticsearch[:user] and mode 0755
+  recursive true
+  action :create
 end
 
 # Increase open file and memory limits
