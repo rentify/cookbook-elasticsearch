@@ -51,7 +51,7 @@ module Extensions
       not_if do
         Dir.entries("#{node.elasticsearch[:dir]}/elasticsearch-#{node.elasticsearch[:version]}/plugins/").any? do |plugin|
           next if plugin =~ /^\./
-          name.include? plugin
+          !!(/#{plugin}/i.match(name))
         end rescue false
       end
 
